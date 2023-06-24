@@ -9,9 +9,9 @@ public class MyConnection {
     private Connection connection;
 
     private MyConnection() {
-        String url = "jdbc:sqlserver://localhost:1433;databaseName=QUANLYNHANVIEN";
+        String url = "jdbc:sqlserver://localhost:1433;databaseName=" + Constant.DB_NAME;
         try {
-            connection = DriverManager.getConnection(url , "sa", "519216");
+            connection = DriverManager.getConnection(url , Constant.SQLSERVER_LOGIN, Constant.SQLSERVER_PASSWORD);
         } catch (SQLException e) {
             e.printStackTrace();
         }

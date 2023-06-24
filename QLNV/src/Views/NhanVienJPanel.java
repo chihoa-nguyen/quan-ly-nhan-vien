@@ -1,5 +1,6 @@
 package Views;
 
+import Controller.Constant;
 import Controller.MyConnection;
 
 import java.text.SimpleDateFormat;
@@ -59,10 +60,11 @@ public class NhanVienJPanel extends javax.swing.JPanel {
             column = new Vector();
 
             //String sql = "SELECT * FROM NHANVIEN";
-            String sql = "SELECT MANV \"MÃ NHÂN VIÊN\", HO HỌ, TEN TÊN, GIOITINH \"GIỚI TÍNH\", "
-                    + "NGAYSINH \"NGÀY SINH\", DIACHI \"ĐỊA CHỈ\", CCCD, SDT, EMAIL, CV.TENCV AS \"CHỨC VỤ\"\n"
-                    + "FROM NHANVIEN NV \n"
-                    + "JOIN CHUCVU CV ON NV.MACV= CV.MACV";
+            String sql = "SELECT NV.MANV \"MÃ NHÂN VIÊN\", NV.HO HỌ, NV.TEN TÊN, NV.GIOITINH \"GIỚI TÍNH\", "
+                    + "NV.NGAYSINH \"NGÀY SINH\", NV.DIACHI \"ĐỊA CHỈ\", NV.CCCD, NV.SDT, NV.EMAIL, CV.TENCV AS \"CHỨC VỤ\"\n"
+                    + "FROM NHANVIEN NV, CHUCVU CV, TAIKHOAN TK \n"
+                    + "WHERE NV.MANV = TK.TENTK AND TK.TRANGTHAI LIKE N'HOẠT ĐỘNG' AND NV.MACV= CV.MACV";
+                    
 
             Statement st = conn.createStatement();
             ResultSet rs = st.executeQuery(sql);
@@ -80,33 +82,7 @@ public class NhanVienJPanel extends javax.swing.JPanel {
                 }
                 tbn.addRow(row);
                 jtbNhanVien.setModel(tbn);
-            }
-//            jtbNhanVien.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-//                @Override
-//                public void valueChanged(ListSelectionEvent e) {
-//                    if (jtbNhanVien.getSelectedRow() >= 0) {
-//                        jtfManv.setText(jtbNhanVien.getValueAt(jtbNhanVien.getSelectedRow(), 0) + "");
-//                        jtfHo.setText(jtbNhanVien.getValueAt(jtbNhanVien.getSelectedRow(), 1) + "");
-//                        jtfTen.setText(jtbNhanVien.getValueAt(jtbNhanVien.getSelectedRow(), 2) + "");
-//
-//                        if (jtbNhanVien.getValueAt(jtbNhanVien.getSelectedRow(), 3).toString().equalsIgnoreCase("1")) {
-//                            jrdNam.setSelected(true);
-//                        } else {
-//                            jrdNu.setSelected(true);
-//                        }
-//
-//                        jdcNgaySinh.setDateFormatString(jtbNhanVien.getValueAt(jtbNhanVien.getSelectedRow(), 4).toString());
-//                        //jdcNgaySinh.setDate(jtbNhanVien.getValueAt(jtbNhanVien.getSelectedRow(), 4).toString());
-//                        jtfDiaChi.setText(jtbNhanVien.getValueAt(jtbNhanVien.getSelectedRow(), 5) + "");
-//                        jtfCCCD.setText(jtbNhanVien.getValueAt(jtbNhanVien.getSelectedRow(), 6) + "");
-//                        jtfSDT.setText(jtbNhanVien.getValueAt(jtbNhanVien.getSelectedRow(), 7) + "");
-//                        jtfEmail.setText(jtbNhanVien.getValueAt(jtbNhanVien.getSelectedRow(), 8) + "");
-//                        jcbChucVu.setSelectedItem(jtbNhanVien.getModel().getValueAt(jtbNhanVien.getSelectedRow(), 9) + "");
-//
-//                    }
-//
-//                }
-//            });
+            }       
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -425,27 +401,27 @@ public class NhanVienJPanel extends javax.swing.JPanel {
     private void jbtAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtAddActionPerformed
         try {
             Connection conn = MyConnection.getInstance().getConnection();
-            String sql = "INSERT INTO NHANVIEN VALUES(?,?,?,?,?,?,?,?,?,?)";
-            
-            PreparedStatement ps = conn.prepareStatement(sql);
-            //ResultSet rs = ps.executeQuery();
-            ps.setString(1, jtfManv.getText());
-            ps.setString(2, jtfHo.getText());
-            ps.setString(3, jtfTen.getText());
+            String sql_nhanvien = "INSERT INTO NHANVIEN VALUES(?,?,?,?,?,?,?,?,?,?)";
+            String sql_taikhoan = "INSERT INTO TAIKHOAN VALUES(?,?,?,?)";
+            PreparedStatement ps_nhanvien = conn.prepareStatement(sql_nhanvien);
+            PreparedStatement ps_taikhoan = conn.prepareStatement(sql_taikhoan);
+            ps_nhanvien.setString(1, jtfManv.getText());            
+            ps_nhanvien.setString(2, jtfHo.getText());
+            ps_nhanvien.setString(3, jtfTen.getText());
             if (jrdNam.isSelected()) {
-                ps.setBoolean(4, true);
+                ps_nhanvien.setBoolean(4, true);
             } else {
-                ps.setBoolean(4, false);
+                ps_nhanvien.setBoolean(4, false);
             }
     
 
             //SimpleDateFormat sdf= new SimpleDateFormat("yyyy-MM-dd");
             java.sql.Date date= new java.sql.Date(jdcNgaySinh.getDate().getTime());
-            ps.setDate(5,date );
-            ps.setString(6, jtfDiaChi.getText());
-            ps.setString(7, jtfCCCD.getText());
-            ps.setString(8, jtfSDT.getText());
-            ps.setString(9, jtfEmail.getText());
+            ps_nhanvien.setDate(5,date );
+            ps_nhanvien.setString(6, jtfDiaChi.getText());
+            ps_nhanvien.setString(7, jtfCCCD.getText());
+            ps_nhanvien.setString(8, jtfSDT.getText());
+            ps_nhanvien.setString(9, jtfEmail.getText());
             String temp = jcbChucVu.getSelectedItem().toString();
             String chucVu = jcbChucVu.getSelectedItem().toString();
             
@@ -454,11 +430,18 @@ public class NhanVienJPanel extends javax.swing.JPanel {
             } else if(chucVu.equals("NHÂN VIÊN")){
                 chucVu = "CV01";
             } else chucVu ="CV03";
-            ps.setString(10, chucVu);
-            //String sql2 = "SELECT MACV FROM CHUCVU WHERE CHUCVU.TENCV='@TEMP'";
-
-            int check = ps.executeUpdate();
-            if (check > 0) {
+            ps_nhanvien.setString(10, chucVu);           
+            String maQuyen;
+            if(chucVu == "CV03") maQuyen ="Q01";
+            else maQuyen = "Q02";
+            ps_taikhoan.setString(1,jtfManv.getText());
+            ps_taikhoan.setString(2,Constant.DEFAULT_NEW_ACCOUNT_PASSWORD);
+            ps_taikhoan.setString(3,"HOẠT ĐỘNG");
+            ps_taikhoan.setString(4,maQuyen);           
+            
+            int check1 = ps_nhanvien.executeUpdate();
+            int check2 = ps_taikhoan.executeUpdate();
+            if (check1 > 0 && check2 > 0) {
                 JOptionPane.showMessageDialog(this, "Thêm nhân viên thành công!");
                 tbn.setRowCount(0);
                 loadData();
@@ -517,7 +500,7 @@ public class NhanVienJPanel extends javax.swing.JPanel {
     private void jbtDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtDeleteActionPerformed
         try {
             Connection conn = MyConnection.getInstance().getConnection();
-            String sql = "DELETE NHANVIEN WHERE MANV=?";
+            String sql = "UPDATE TAIKHOAN SET TRANGTHAI= N'KHOÁ' WHERE TENTK=?";
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setString(1, jtbNhanVien.getValueAt(jtbNhanVien.getSelectedRow(), 0).toString());
             if (JOptionPane.showConfirmDialog(this, "Bạn chắc chắn xóa nhân viên này?", "Confirm",

@@ -208,9 +208,14 @@ public class LoginForm extends javax.swing.JFrame {
                 ResultSet rs=pst.executeQuery();
                 if(rs.next()){
                     String state = rs.getString("TRANGTHAI");
+                    String role =rs.getString("MAQUYEN");
                     if (state.trim().equals("HOẠT ĐỘNG")){
-                        JOptionPane.showMessageDialog(this, "Đăng nhập thành công!");
+                        if(role.trim().equals("Q01")){
+                            JOptionPane.showMessageDialog(this, "Đăng nhập thành công!");
                         new MainJFrame().setVisible(true);
+                        } else{
+                            JOptionPane.showMessageDialog(this, "Chưa có chức năng cho nhân viên!");
+                        }                
                         
                     } else{
                         JOptionPane.showMessageDialog(this, "Tài khoản đã bị khoá!");

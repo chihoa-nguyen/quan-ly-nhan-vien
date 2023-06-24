@@ -115,6 +115,7 @@ public class ChamCongJPanel extends javax.swing.JPanel {
                             listChamCong = chamCongControl.GetList();
                             TableModel modelChamCong = new ChamCongModel(listChamCong);
                             tableChamCong.setModel(modelChamCong);
+                            JOptionPane.showMessageDialog(null, "Đã thêm chấm công !");
                             Clear();
                         }
                     }
